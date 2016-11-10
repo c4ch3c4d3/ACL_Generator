@@ -1,0 +1,17 @@
+Original version, not using recursiveness
+
+
+def service_check(service):
+    valid_service = False
+    while valid_service == False:
+        if service.isdigit() is True:
+            if (int(service) > 65535) or (int(service) <= 0):
+               service = str(service) + raw_input(" is invalid.  Please specify a valid IP port or [any]: ") or "any"
+            else:
+                valid_service = True
+                return service
+        elif service == "any":
+            valid_service = True
+            return service
+        else:
+            service = str(service) + raw_input(" is invalid.  Please specify a valid IP port or [any]: ") or "any"

@@ -1,0 +1,104 @@
+description "MTNDubai-NPS"
+           entry 2 create
+               description "Allow-BGP"
+               match protocol tcp
+                   dst-ip ip-prefix-list "MTN-BGP"
+                   dst-port eq 179
+               exit
+               action forward
+           exit
+           entry 3 create
+               description "Allow-bgp"
+               match protocol tcp
+                   dst-ip ip-prefix-list "MTN-BGP"
+                   src-port eq 179
+               exit
+               action forward
+           exit
+           entry 4 create
+               description "Block-all"
+               match protocol *
+                   dst-ip ip-prefix-list "MTN-BGP"
+               exit
+               action drop
+           exit
+           entry 5 create
+               match protocol udp
+                   fragment true
+               exit
+               action drop
+           exit
+           entry 6 create
+               description "Block-hole"
+               match
+                   dst-ip ip-prefix-list "MTN-Null-Route"
+               exit
+               action drop
+           exit
+           entry 7 create
+               description "block-RPC"
+               match protocol *
+                   port eq 111
+               exit
+               action drop
+           exit
+           entry 8 create
+               description "Allow-ports-4500-500"
+               match protocol udp
+                   dst-ip 41.57.87.0/24
+                   port port-list "MTN-Allow-4500-500"
+               exit
+               action forward
+           exit
+           entry 9 create
+               description "Drop-the-bad"
+               match
+                   dst-ip 41.57.87.0/24
+               exit
+               action drop
+           exit
+           entry 10 create
+               match protocol *
+                   dst-ip ip-prefix-list "MTN-DNS"
+                   port eq 53
+               exit
+               action forward
+           exit
+           entry 15 create
+               match protocol *
+                   dst-ip ip-prefix-list "MTN-DNS"
+               exit
+               action drop
+           exit
+           entry 19 create
+               description "Block-UDP-QT-1400"
+               match protocol udp
+                   dst-ip ip-prefix-list "MTN-allowed-subnets"
+               exit
+               action drop packet-length gt 1400
+           exit
+           entry 20 create
+               match protocol *
+                   dst-ip ip-prefix-list "MTN-allowed-subnets"
+                   port port-list "MTN_Dubai"
+               exit
+               action drop
+           exit
+           entry 25 create
+               match protocol icmp
+                   dst-ip ip-prefix-list "MTN-allowed-subnets"
+               exit
+               action drop
+           exit
+           entry 30 create
+               match protocol *
+                   dst-ip ip-prefix-list "MTN-allowed-subnets"
+               exit
+               action forward
+           exit
+           entry 35 create
+               description "Allow-the-rest"
+               match
+               exit
+               action forward
+           exit
