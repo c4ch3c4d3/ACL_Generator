@@ -13,9 +13,10 @@ def cli():
 
     #One time questions for the user to answer
     #device_type = question.q_device()
-    '''
+
     filter_name = question.q_name("filter")
-    filter_number = question.q_name("filter number")
+    import pdb; pdb.set_trace()
+    filter_number = question.q_name("number")
 
     #user interaction, obtain the necessary components for an ACL, calling on General_Qs to generate queries
     while new_term == True:
@@ -41,12 +42,6 @@ def cli():
             print ""
         else:
             new_term = False
-            Generators.alcatel_generator(100, filter_name, acl_vars, entry_number)
-        '''
-
-    acl_vars.append([10, 'entry', 'tcp', ['192.168.1.1/32', '192.168.1.2/32'], ['80', '443'], ['10.0.0.1/32', '10.0.0.0/8'], ['any'], 'forward'])
-    acl_vars.append([20, 'entry_2', '*', ['192.18.1.1/32'], ['any'], ['any'], ['any'], 'drop'])
-    acl_vars.append([30, 'entry_3', 'udp', ['192.168.1.1/32', '192.168.1.2/32'], ['80', '443'], ['8.8.8.8/10'], ['80', '443'], 'forward'])
-    Generators.alcatel_generator(100, "test_filter", acl_vars, 30)
+            Generators.alcatel_generator(filter_number, filter_name, acl_vars, entry_number)
 
 cli()

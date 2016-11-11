@@ -17,7 +17,8 @@ class General_Questions():
     NAME_STRINGS = {
         'descriptor': ' (use _ for spaces): ',
         'entry' : 'description for this entry, using underscores (_) for spaces: ',
-        'filter' : 'description for this filter, using underscores (_) for spaces: '
+        'filter' : 'description for this filter, using underscores (_) for spaces: ',
+        'number' : 'number for this filter: '
     }
 
     PROTOCOL_STRINGS = {
@@ -51,7 +52,10 @@ class General_Questions():
 
     def q_name(self, kind):
         self.name = raw_input(self.POLITE_STRING + self.NAME_STRINGS[kind])
-        self.is_true = self.check.space_check(self.name)
+        if self.name.isdigit is True:
+            self.is_true = self.check.service_check(self.name)
+        else:
+            self.is_true = self.check.space_check(self.name)
         self.valid_input = False
 
         while self.valid_input is False:
@@ -59,7 +63,10 @@ class General_Questions():
                 return self.name
             else:
                 self.name = raw_input(str(self.name) + self.INVALID_STRING + self.NAME_STRINGS[kind])
-                self.is_true = self.check.space_check(self.name)
+                if self.NAME_STRINGS[kind] == "number":
+                    self.is_true = self.check.service_check(self.name)
+                else:
+                    self.is_true = self.check.space_check(self.name)
 
     def q_ip(self, kind):
         self.ip_addr = raw_input(self.POLITE_STRING + str(kind) + self.IP_STRINGS[0] ) or "any"

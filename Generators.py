@@ -9,6 +9,7 @@ def alcatel_generator(filter_number, name, acl_vars_array, entry_number):
     port_list_number = 1
     existing_list_names = []
     existing_list_numbers = []
+    duplicate = False
 
     for x in range(0, len(acl_vars_array)):
         for y in range(3, 7):
