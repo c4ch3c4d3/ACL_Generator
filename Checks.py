@@ -49,7 +49,7 @@ class network_checks:
 
         #regex checking for an ip address in the EXACT format: ###.###.###.###/##  Anything else will be rejected
         valid_ip = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/(?:3[0-2]|2[0-9]|1[0-9]|[0-9]?)$")
-
+        #import pdb; pdb.set_trace()
         for ip in ip_addr:
             if valid_ip.search(ip) is not None:
                 pass

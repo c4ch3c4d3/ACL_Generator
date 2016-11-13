@@ -3,9 +3,9 @@ import Checks
 import Generators
 
 class General_Questions():
-"""
-A class of the various questions needed for an ACL.  Maybe doesn't need to be a class at all?
-"""
+    """
+    A class of the various questions needed for an ACL.  Maybe doesn't need to be a class at all?
+    """
 
     check = Checks.network_checks()
     valid_input = False
@@ -80,6 +80,7 @@ A class of the various questions needed for an ACL.  Maybe doesn't need to be a 
         Ask for a source or destination ip.  Kinds accepted:
         'source, 'destination'
         """
+        #import pdb; pdb.set_trace()
         self.ip_addr = raw_input(self.POLITE_STRING + str(kind) + self.IP_STRINGS[0] ) or "any"
         self.ip_addr = self.ip_addr.replace(' ','')
         self.ip_addr = self.ip_addr.split(',')
@@ -91,6 +92,8 @@ A class of the various questions needed for an ACL.  Maybe doesn't need to be a 
                 return self.ip_addr
             else:
                 self.ip_addr = raw_input(str(self.ip_addr) + self.INVALID_STRING + str(kind) + self.IP_STRINGS[1] ) or "any"
+                self.ip_addr = self.ip_addr.replace(' ','')
+                self.ip_addr = self.ip_addr.split(',')
                 self.is_true = self.check.ip_check(self.ip_addr)
 
 
