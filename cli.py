@@ -43,6 +43,6 @@ def cli():
             print ""
         else:
             new_term = False
-            Generators.alcatel_generator(filter_number, filter_name, acl_vars, entry_number)
+            Generators.alcatel_filter_generator(filter_number, filter_name, acl_vars, entry_number)
 
 cli()
