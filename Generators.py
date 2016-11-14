@@ -19,6 +19,7 @@ def alcatel_generator(filter_number, name, acl_vars_array, entry_number):
     existing_list_names = []
     existing_list_numbers = []
     duplicate = False
+    is_title = False
 
     #The following loops through our entire array, and calls list_generator.
     #Additionally, it checks to see if a list has already been created for any given set of numbers
@@ -60,23 +61,28 @@ def alcatel_generator(filter_number, name, acl_vars_array, entry_number):
         print "entry " + str(acl_vars_array[i][0]) + " create"
         print "\tdescription " + str(acl_vars_array[i][1])
         print "\tmatch protocol " + str(acl_vars_array[i][2])
+        import pdb; pdb.set_trace()
 
-        if check.ip_check(str(acl_vars_array[i][3])) is False:
+        is_title = check.ip_check(str(acl_vars_array[i][3]))
+        if is_title is False:
             print "\t\tsrc-ip ip-prefix-list " + str(acl_vars_array[i][3])
         else:
             print "\t\tsrc-ip " + str(acl_vars_array[i][3])
 
-        if check.service_check(str(acl_vars_array[i][4])) is False:
+        is_title = check.service_check(str(acl_vars_array[i][4]))
+        if is_title is False:
             print "\t\tsrc-port port-list " + str(acl_vars_array[i][4])
         else:
             print "\t\tsrc-port eq " + str(acl_vars_array[i][4])
 
-        if check.ip_check(str(acl_vars_array[i][5])) is False:
+        is_title = check.ip_check(str(acl_vars_array[i][5]))
+        if is_title is False:
             print "\t\tdst-ip ip-prefix-list " + str(acl_vars_array[i][5])
         else:
             print "\t\tdst-ip " + str(acl_vars_array[i][5])
 
-        if check.service_check(str(acl_vars_array[i][6])) is False:
+        is_title = check.service_check(str(acl_vars_array[i][6]))
+        if is_title is False:
             print "\t\tdst-port port-list " + str(acl_vars_array[i][6])
         else:
             print "\t\tdst-port eq " + str(acl_vars_array[i][6])

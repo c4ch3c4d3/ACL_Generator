@@ -50,15 +50,18 @@ class network_checks:
 
         #regex checking for an ip address in the EXACT format: ###.###.###.###/##  Anything else will be rejected
         valid_ip = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/(?:3[0-2]|2[0-9]|1[0-9]|[0-9]?)$")
-        #import pdb; pdb.set_trace()
-        for ip in ip_addr:
-            if valid_ip.search(ip) is not None:
-                pass
-            elif ip == "any":
-                pass
+        try:
+            if valid_ip.search(ip_addr) is not None or ip_addr == "any":
+                return True
             else:
                 return False
-        return True
+        except:
+            for ip in ip_addr:
+                if valid_ip.search(ip) is not None or ip == "any":
+                    pass
+                else:
+                    return False
+            return True
 
     def service_check(self, service):
         """
@@ -70,7 +73,7 @@ class network_checks:
             if port.isdigit() is True:
                 if (int(port) <= 65535) and (int(port) > 0):
                     pass
-            elif service[0] == "any":
+            elif service[0] == "any" or service == "any":
                 return True
             else:
                 return False
@@ -87,7 +90,7 @@ class network_checks:
     def length_check(self, name):
         "Checks input ensure it is less than 30 characters"
         self.name = name
-        if len(name) <= 30:
+        if len(name) <= 20:
             return True
         else:
             return False

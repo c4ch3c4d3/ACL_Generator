@@ -17,8 +17,8 @@ class General_Questions():
     }
     NAME_STRINGS = {
         'descriptor': ' (use _ for spaces): ',
-        'entry' : 'description for this entry, using underscores (_) for spaces and less than 30 characters: ',
-        'filter' : 'description for this filter, using underscores (_) for spaces and less than 30 characters: ',
+        'entry' : 'description for this entry, using underscores (_) for spaces and less than 20 characters: ',
+        'filter' : 'description for this filter, using underscores (_) for spaces and less than 20 characters: ',
         'number' : 'number for this filter: '
     }
 
