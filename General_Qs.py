@@ -1,6 +1,5 @@
-#pylint: disable=C0301
+#pylint: disable=C0301, W0201
 import Checks
-import Generators
 
 class General_Questions():
     """
@@ -18,8 +17,8 @@ class General_Questions():
     }
     NAME_STRINGS = {
         'descriptor': ' (use _ for spaces): ',
-        'entry' : 'description for this entry, using underscores (_) for spaces: ',
-        'filter' : 'description for this filter, using underscores (_) for spaces: ',
+        'entry' : 'description for this entry, using underscores (_) for spaces and less than 30 characters: ',
+        'filter' : 'description for this filter, using underscores (_) for spaces and less than 30 characters: ',
         'number' : 'number for this filter: '
     }
 
@@ -58,15 +57,13 @@ class General_Questions():
         'filter', 'entry', 'number'
         """
         self.name = raw_input(self.POLITE_STRING + self.NAME_STRINGS[kind])
-        try:
-            int(self.name)
-            self.is_true = self.check.service_check(self.name)
-        except:
-            self.is_true = self.check.space_check(self.name)
+
+        self.is_true = self.check.space_check(self.name)
+        self.length = self.check.length_check(self.name)
         self.valid_input = False
 
         while self.valid_input is False:
-            if self.is_true is True:
+            if self.is_true is True and self.length is True:
                 return self.name
             else:
                 self.name = raw_input(str(self.name) + self.INVALID_STRING + self.NAME_STRINGS[kind])
@@ -74,15 +71,15 @@ class General_Questions():
                     self.is_true = self.check.service_check(self.name)
                 else:
                     self.is_true = self.check.space_check(self.name)
+                    self.length = self.check.length_check(self.name)
 
     def q_ip(self, kind):
         """
         Ask for a source or destination ip.  Kinds accepted:
         'source, 'destination'
         """
-        #import pdb; pdb.set_trace()
-        self.ip_addr = raw_input(self.POLITE_STRING + str(kind) + self.IP_STRINGS[0] ) or "any"
-        self.ip_addr = self.ip_addr.replace(' ','')
+        self.ip_addr = raw_input(self.POLITE_STRING + str(kind) + self.IP_STRINGS[0]) or "any"
+        self.ip_addr = self.ip_addr.replace(' ', '')
         self.ip_addr = self.ip_addr.split(',')
         self.is_true = self.check.ip_check(self.ip_addr)
         self.valid_input = False
@@ -91,8 +88,8 @@ class General_Questions():
             if self.is_true is True:
                 return self.ip_addr
             else:
-                self.ip_addr = raw_input(str(self.ip_addr) + self.INVALID_STRING + str(kind) + self.IP_STRINGS[1] ) or "any"
-                self.ip_addr = self.ip_addr.replace(' ','')
+                self.ip_addr = raw_input(str(self.ip_addr) + self.INVALID_STRING + str(kind) + self.IP_STRINGS[1]) or "any"
+                self.ip_addr = self.ip_addr.replace(' ', '')
                 self.ip_addr = self.ip_addr.split(',')
                 self.is_true = self.check.ip_check(self.ip_addr)
 
@@ -103,8 +100,8 @@ class General_Questions():
         'source, 'destination'
         """
 
-        self.service = raw_input(self.POLITE_STRING + str(kind) + self.PORT_STRINGS[0] ) or "any"
-        self.service = self.service.replace(' ','')
+        self.service = raw_input(self.POLITE_STRING + str(kind) + self.PORT_STRINGS[0]) or "any"
+        self.service = self.service.replace(' ', '')
         self.service = self.service.split(',')
         self.is_true = self.check.service_check(self.service)
         self.valid_input = False
@@ -113,7 +110,7 @@ class General_Questions():
             if self.is_true is True:
                 return self.service
             else:
-                self.service = raw_input(str(self.service) + self.INVALID_STRING + str(kind) + self.PORT_STRINGS[1] ) or "any"
+                self.service = raw_input(str(self.service) + self.INVALID_STRING + str(kind) + self.PORT_STRINGS[1]) or "any"
                 self.is_true = self.check.service_check(self.service)
 
     def q_protocol(self):

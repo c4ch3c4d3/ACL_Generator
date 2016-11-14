@@ -1,8 +1,7 @@
-#pylint: disable=C0301
+#pylint: disable=C0301, C0103
 import Checks
 
 def alcatel_generator(filter_number, name, acl_vars_array, entry_number):
-
     #[[10, 'entry', 'tcp', ['192.168.1.1/32', '192.168.1.2/32'], ['80', '443'], ['10.0.0.1/32', '10.0.0.0/8'], ['any'], 'forward'], [20, 'entry_2', '*', ['192.18.1.1/32'], ['any'], ['any'], ['any'], 'drop']]
     """
     Generates an alcatel acl.  Requires:
@@ -51,7 +50,7 @@ def alcatel_generator(filter_number, name, acl_vars_array, entry_number):
             else:
                 acl_vars_array[x][y] = acl_vars_array[x][y][0]
 
-    print "configure filter ip-filter " + str(filter_number)
+    print "configure filter ip-filter " + str(filter_number) + "create"
     print ""
     print "description " + str(name)
     print ""
@@ -91,6 +90,7 @@ def alcatel_generator(filter_number, name, acl_vars_array, entry_number):
     print "\tmatch"
     print "exit"
     print "action forward"
+    print "exit"
     print ""
 
 def list_generator(name, kind, numbers):
@@ -107,7 +107,7 @@ def list_generator(name, kind, numbers):
         'port_list' : "port-list "
     }
 
-    print "configure filter match-list " + LIST_STRING[kind] + str(name)
+    print "configure filter match-list " + LIST_STRING[kind] + str(name) + "create"
     if kind == "ip_list":
         for ip_addr in numbers:
             print "\tprefix " + str(ip_addr)

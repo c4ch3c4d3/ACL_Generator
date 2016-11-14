@@ -1,4 +1,5 @@
 #pylint: disable=C0301
+#may need to implement character check for names, as they can only have a maximum character count of 32
 import re
 class network_checks:
 
@@ -82,3 +83,11 @@ class network_checks:
         #regex search for a space
         valid_name = re.compile(' ')
         return bool(valid_name.search(name) is None)
+
+    def length_check(self, name):
+        "Checks input ensure it is less than 30 characters"
+        self.name = name
+        if len(name) <= 30:
+            return True
+        else:
+            return False
