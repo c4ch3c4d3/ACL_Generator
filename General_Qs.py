@@ -115,7 +115,7 @@ class General_Questions():
 
     def q_protocol(self):
         """Ask for a protocol.  Accepts no arguments"""
-        self.protocol = raw_input(self.POLITE_STRING + self.PROTOCOL_STRINGS['general']) or "*"
+        self.protocol = raw_input(self.POLITE_STRING + self.PROTOCOL_STRINGS['general']) or "any"
         self.is_true = self.check.key_word_check(self.protocol, "protocol")
         self.valid_input = False
 
@@ -123,7 +123,7 @@ class General_Questions():
             if self.is_true is True:
                 return self.protocol
             else:
-                self.protocol = raw_input(str(self.protocol) + self.INVALID_STRING + self.PROTOCOL_STRINGS['invalid']) or "*"
+                self.protocol = raw_input(str(self.protocol) + self.INVALID_STRING + self.PROTOCOL_STRINGS['invalid']) or "any"
                 self.is_true = self.check.key_word_check(self.protocol, "protocol")
 
 
