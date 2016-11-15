@@ -42,6 +42,7 @@ def cli():
             entry_number += 10
             print ""
         else:
+            print ""
             new_term = False
             Generators.alcatel_filter_generator(filter_number, filter_name, acl_vars, entry_number)
 
