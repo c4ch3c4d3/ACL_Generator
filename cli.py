@@ -16,8 +16,8 @@ def cli():
     #device_type = question.q_device()
 
     filter_number = question.q_name("number")
-    filter_name = question.q_name("filter")
-    print ""
+    filter_name = question.q_name("filter") or "acl"
+    print("")
 
     #user interaction, obtain the necessary components for an ACL, calling on General_Qs to generate queries
     while new_term is True:
@@ -40,9 +40,9 @@ def cli():
         need_term = question.q_new_term()
         if need_term == "y":
             entry_number += 10
-            print ""
+            print("")
         else:
-            print ""
+            print("")
             new_term = False
             Generators.alcatel_filter_generator(filter_number, filter_name, acl_vars, entry_number)
 

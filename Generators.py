@@ -27,10 +27,10 @@ def alcatel_filter_generator(filter_number, name, acl_vars_array, entry_number):
         acl.write("action forward\n")
         acl.write("exit\n\n")
         acl.write("info\n")
-    
+
     with open(name + ".txt", 'r') as acl:
-        print acl.read()    
-    
+        print(acl.read())
+
 def alcatel_vars_fixer(name, acl_vars_array, file):
     """
     The following loops through our entire array, and calls list_generator.
@@ -98,7 +98,7 @@ def list_generator(name, kind, numbers, file):
         return name
     elif kind == "port_list":
         for port in numbers:
-            file.write( "\tport " + str(port) + "\n")
+            file.write("\tport " + str(port) + "\n")
         file.write("exit\n\n")
         return name
 
@@ -114,11 +114,11 @@ def entry_generator(acl_vars_array, entry_number, file):
     """
     check = Checks.network_checks()
     i = entry_number
-    
-    for i in range(0, i/10, 1):
-        file.write( "entry " + str(acl_vars_array[i][0]) + " create\n")
-        file.write( "\tdescription " + str(acl_vars_array[i][1]) + "\n")
-        
+
+    for i in range(0, int(i/10), 1):
+        file.write("entry " + str(acl_vars_array[i][0]) + " create\n")
+        file.write("\tdescription " + str(acl_vars_array[i][1]) + "\n")
+
         if acl_vars_array[i][2] == "any":
             file.write("\tmatch protocol *\n")
         else:
@@ -138,67 +138,29 @@ def entry_generator(acl_vars_array, entry_number, file):
         elif acl_vars_array[i][4] == "any":
             pass
         else:
-            file.write( "\t\tsrc-port eq " + str(acl_vars_array[i][4]) + "\n")
+            file.write("\t\tsrc-port eq " + str(acl_vars_array[i][4]) + "\n")
 
         is_title = check.ip_check(str(acl_vars_array[i][5]))
         if is_title is False:
-            file.write( "\t\tdst-ip ip-prefix-list " + str(acl_vars_array[i][5]) + "\n")
+            file.write("\t\tdst-ip ip-prefix-list " + str(acl_vars_array[i][5]) + "\n")
         elif acl_vars_array[i][5] == "any":
             pass
         else:
-            file.write( "\t\tdst-ip " + str(acl_vars_array[i][5]) + "\n")
+            file.write("\t\tdst-ip " + str(acl_vars_array[i][5]) + "\n")
 
         is_title = check.service_check(str(acl_vars_array[i][6]))
         if is_title is False:
-            file.write( "\t\tdst-port port-list " + str(acl_vars_array[i][6]) + "\n")
+            file.write("\t\tdst-port port-list " + str(acl_vars_array[i][6]) + "\n")
         elif acl_vars_array[i][6] == "any":
             pass
         else:
-            file.write( "\t\tdst-port eq " + str(acl_vars_array[i][6]) + "\n")
+            file.write("\t\tdst-port eq " + str(acl_vars_array[i][6]) + "\n")
 
         file.write("\texit\n")
         file.write("\taction " + str(acl_vars_array[i][7]) + "\n")
         file.write("exit\n\n")
-    '''
-    keywords = {
-        'src-ip' : 'src-ip ',
-        'dst-ip' : 'dst-ip ',
-        'src-port' : 'src-port',
-        'dst-port' : 'dst-port',
-        'prefix' : 'ip-prefix-list',
-        'port' : 'port-list'
-    }
 
-    for i in range(0, i/10, 1):
-        for j in range (0, 7):
-            src_or_dst = "src"
-            if j == 0:
-                file.write( "entry " + str(acl_vars_array[i][j]) + " create\n")
-                file.write( "\tdescription " + str(acl_vars_array[i][1]) + "\n")
-            elif j == 2:
-                if acl_vars_array[i][2] == "any":
-                    file.write("\tmatch protocol *\n")
-                else:
-                    file.write("\tmatch protocol " + str(acl_vars_array[i][j]) + "\n")
-            elif j == 3 or j == 4 or j == 5 or j == 6:
-                if j == 5:
-                    src_or_dst = "dst"
-                is_title = check.ip_check(str(acl_vars_array[i][j]))
-                if acl_vars_array[i][j] == "any":
-                    pass
-                elif is_title is False:
-                    if j == 3 or j == 5:
-                        prefix_or_port = "prefix"
-                    else:
-                        prefix_or_port = "port"
-                    file.write("\t\t" + keywords[src_or_dst] + keywords[prefix_or_port] + str(acl_vars_array[i][j]) + "\n")
-                else:
-                    file.write("\t\t" + keywords[src_or_dst] +  str(acl_vars_array[i][j]) + "\n")
-            elif j == 7:
-                file.write("\texit\n")
-                file.write("\taction " + str(acl_vars_array[i][7]) + "\n")
-                file.write("exit\n\n")
-                        
-    '''
-                
-        
+'''def cisco_filter_generator(filter_number, name, acl_vars_array):
+    if filter_number <= 99 or filter_number <= 1300 and filter_number >= 1999:'''
+
+

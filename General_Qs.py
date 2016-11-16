@@ -56,7 +56,7 @@ class General_Questions():
         Ask for various types of names. Types accepted:
         'filter', 'entry', 'number'
         """
-        self.name = raw_input(self.POLITE_STRING + self.NAME_STRINGS[kind])
+        self.name = input(self.POLITE_STRING + self.NAME_STRINGS[kind])
 
         self.is_true = self.check.space_check(self.name)
         self.length = self.check.length_check(self.name)
@@ -66,7 +66,7 @@ class General_Questions():
             if self.is_true is True and self.length is True:
                 return self.name
             else:
-                self.name = raw_input(str(self.name) + self.INVALID_STRING + self.NAME_STRINGS[kind])
+                self.name = input(str(self.name) + self.INVALID_STRING + self.NAME_STRINGS[kind])
                 if self.NAME_STRINGS[kind] == "number":
                     self.is_true = self.check.service_check(self.name)
                 else:
@@ -78,7 +78,7 @@ class General_Questions():
         Ask for a source or destination ip.  Kinds accepted:
         'source, 'destination'
         """
-        self.ip_addr = raw_input(self.POLITE_STRING + str(kind) + self.IP_STRINGS[0]) or "any"
+        self.ip_addr = input(self.POLITE_STRING + str(kind) + self.IP_STRINGS[0]) or "any"
         self.ip_addr = self.ip_addr.replace(' ', '')
         self.ip_addr = self.ip_addr.split(',')
         self.is_true = self.check.ip_check(self.ip_addr)
@@ -88,7 +88,7 @@ class General_Questions():
             if self.is_true is True:
                 return self.ip_addr
             else:
-                self.ip_addr = raw_input(str(self.ip_addr) + self.INVALID_STRING + str(kind) + self.IP_STRINGS[1]) or "any"
+                self.ip_addr = input(str(self.ip_addr) + self.INVALID_STRING + str(kind) + self.IP_STRINGS[1]) or "any"
                 self.ip_addr = self.ip_addr.replace(' ', '')
                 self.ip_addr = self.ip_addr.split(',')
                 self.is_true = self.check.ip_check(self.ip_addr)
@@ -100,7 +100,7 @@ class General_Questions():
         'source, 'destination'
         """
 
-        self.service = raw_input(self.POLITE_STRING + str(kind) + self.PORT_STRINGS[0]) or "any"
+        self.service = input(self.POLITE_STRING + str(kind) + self.PORT_STRINGS[0]) or "any"
         self.service = self.service.replace(' ', '')
         self.service = self.service.split(',')
         self.is_true = self.check.service_check(self.service)
@@ -110,12 +110,12 @@ class General_Questions():
             if self.is_true is True:
                 return self.service
             else:
-                self.service = raw_input(str(self.service) + self.INVALID_STRING + str(kind) + self.PORT_STRINGS[1]) or "any"
+                self.service = input(str(self.service) + self.INVALID_STRING + str(kind) + self.PORT_STRINGS[1]) or "any"
                 self.is_true = self.check.service_check(self.service)
 
     def q_protocol(self):
         """Ask for a protocol.  Accepts no arguments"""
-        self.protocol = raw_input(self.POLITE_STRING + self.PROTOCOL_STRINGS['general']) or "any"
+        self.protocol = input(self.POLITE_STRING + self.PROTOCOL_STRINGS['general']) or "any"
         self.is_true = self.check.key_word_check(self.protocol, "protocol")
         self.valid_input = False
 
@@ -123,13 +123,13 @@ class General_Questions():
             if self.is_true is True:
                 return self.protocol
             else:
-                self.protocol = raw_input(str(self.protocol) + self.INVALID_STRING + self.PROTOCOL_STRINGS['invalid']) or "any"
+                self.protocol = input(str(self.protocol) + self.INVALID_STRING + self.PROTOCOL_STRINGS['invalid']) or "any"
                 self.is_true = self.check.key_word_check(self.protocol, "protocol")
 
 
     def q_action(self, kind):
         """Ask for an action.  Kind currently doesn't matter"""
-        self.action = raw_input(self.POLITE_STRING + str(self.ACTION_STRINGS['general'])) or self.ACTION_STRINGS[kind]
+        self.action = input(self.POLITE_STRING + str(self.ACTION_STRINGS['general'])) or self.ACTION_STRINGS[kind]
         self.is_true = self.check.key_word_check(self.action, "action")
         self.valid_input = False
 
@@ -137,12 +137,12 @@ class General_Questions():
             if self.is_true is True:
                 return self.action
             else:
-                self.action = raw_input(str(self.action) + self.INVALID_STRING + str(self.ACTION_STRINGS['general'])) or self.ACTION_STRINGS[kind]
+                self.action = input(str(self.action) + self.INVALID_STRING + str(self.ACTION_STRINGS['general'])) or self.ACTION_STRINGS[kind]
                 self.is_true = self.check.key_word_check(self.action, "action")
 
     def q_new_term(self):
         """Ask for a new term.  Accepts no arguments"""
-        self.new = raw_input(self.POLITE_STRING + self.NEW_TERM_STRINGS['general']) or "n"
+        self.new = input(self.POLITE_STRING + self.NEW_TERM_STRINGS['general']) or "n"
         self.is_true = self.check.key_word_check(self.new, "y_or_n")
         self.valid_input = False
 
@@ -150,12 +150,12 @@ class General_Questions():
             if self.is_true is True:
                 return self.new
             else:
-                self.new = raw_input(str(self.new) + self.INVALID_STRING + str(self.NEW_TERM_STRINGS['invalid'])) or "n"
+                self.new = input(str(self.new) + self.INVALID_STRING + str(self.NEW_TERM_STRINGS['invalid'])) or "n"
                 self.is_true = self.check.key_word_check(self.new, "y_or_n")
 
     def q_device(self):
         """Ask for the type of device.  Used to determine the use of Alcatel, Cisco, or Juniper"""
-        self.device = raw_input(self.POLITE_STRING + self.DEVICE_STRINGS['general'])
+        self.device = input(self.POLITE_STRING + self.DEVICE_STRINGS['general'])
         self.is_true = self.check.key_word_check(self.device, "device")
         self.valid_input = False
 
@@ -163,5 +163,5 @@ class General_Questions():
             if self.is_true is True:
                 return self.device
             else:
-                self.device = raw_input(str(self.device) + self.INVALID_STRING + str(self.DEVICE_STRINGS['invalid']))
+                self.device = input(str(self.device) + self.INVALID_STRING + str(self.DEVICE_STRINGS['invalid']))
                 self.is_true = self.check.key_word_check(self.device, "device")
