@@ -17,7 +17,8 @@ def alcatel_filter_generator(filter_number, name, acl_vars_array, entry_number):
     with open(name + ".txt", 'w') as output_file:
         alcatel_vars_fixer(name, acl_vars_array, output_file)
 
-        output_file.write("configure filter ip-filter " + str(filter_number) + " create\n")
+        output_file.write("configure filter ip-filter " +
+                          str(filter_number) + " create\n")
         output_file.write("description " + str(name) + "\n")
 
         entry_generator(acl_vars_array, entry_number, output_file)
@@ -66,14 +67,16 @@ def alcatel_vars_fixer(name, acl_vars_array, output_file):
                 existing_list_numbers.append(acl_vars_array[x][y])
                 acl_vars_array[x][y] = list_generator(str(name) + "_ip_list_" + str(ip_list_number), "ip_list",
                                                       acl_vars_array[x][y], output_file)
-                existing_list_names.append(str(name) + "_ip_list_" + str(ip_list_number))
+                existing_list_names.append(
+                    str(name) + "_ip_list_" + str(ip_list_number))
                 ip_list_number += 1
             elif len(acl_vars_array[x][y]) > 1 and y == 4 and service_check(acl_vars_array[x][y]) is True or len(
                     acl_vars_array[x][y]) > 1 and y == 6 and service_check(acl_vars_array[x][y]) is True:
                 existing_list_numbers.append(acl_vars_array[x][y])
                 acl_vars_array[x][y] = list_generator(str(name) + "_port_list_" + str(port_list_number), "port_list",
                                                       acl_vars_array[x][y], output_file)
-                existing_list_names.append(str(name) + "_port_list_" + str(port_list_number))
+                existing_list_names.append(
+                    str(name) + "_port_list_" + str(port_list_number))
                 port_list_number += 1
             elif duplicate is True:
                 acl_vars_array[x][y] = existing_list_names[z]
@@ -96,7 +99,8 @@ def list_generator(name, kind, numbers, output_file):
         'port_list': "port-list "
     }
 
-    output_file.write("configure filter match-list " + LIST_STRING[kind] + str(name) + " create\n")
+    output_file.write("configure filter match-list " +
+                      LIST_STRING[kind] + str(name) + " create\n")
     if kind == "ip_list":
         for ip_addr in numbers:
             output_file.write("\tprefix " + str(ip_addr) + "\n")
@@ -129,39 +133,50 @@ def entry_generator(acl_vars_array, entry_number, output_file):
         if acl_vars_array[i][2] == "any":
             output_file.write("\tmatch protocol *\n")
         else:
-            output_file.write("\tmatch protocol " + str(acl_vars_array[i][2]) + "\n")
+            output_file.write("\tmatch protocol " +
+                              str(acl_vars_array[i][2]) + "\n")
 
-        is_title = ip_check(str(acl_vars_array[i][3]))
+        j = [acl_vars_array[i][3]]
+        is_title = ip_check(j)
         if is_title is False:
-            output_file.write("\t\tsrc-ip ip-prefix-list " + str(acl_vars_array[i][3]) + "\n")
+            output_file.write("\t\tsrc-ip ip-prefix-list " +
+                              str(acl_vars_array[i][3]) + "\n")
         elif acl_vars_array[i][3] == "any":
             pass
         else:
             output_file.write("\t\tsrc-ip " + str(acl_vars_array[i][3]) + "\n")
 
-        is_title = service_check(str(acl_vars_array[i][4]))
+        j = [acl_vars_array[i][4]]
+        is_title = service_check(j)
         if is_title is False:
-            output_file.write("\t\tsrc-port port-list " + str(acl_vars_array[i][4]) + "\n")
+            output_file.write("\t\tsrc-port port-list " +
+                              str(acl_vars_array[i][4]) + "\n")
         elif acl_vars_array[i][4] == "any":
             pass
         else:
-            output_file.write("\t\tsrc-port eq " + str(acl_vars_array[i][4]) + "\n")
+            output_file.write("\t\tsrc-port eq " +
+                              str(acl_vars_array[i][4]) + "\n")
 
-        is_title = ip_check(str(acl_vars_array[i][5]))
+        j = [acl_vars_array[i][5]]
+        is_title = ip_check(j)
         if is_title is False:
-            output_file.write("\t\tdst-ip ip-prefix-list " + str(acl_vars_array[i][5]) + "\n")
+            output_file.write("\t\tdst-ip ip-prefix-list " +
+                              str(acl_vars_array[i][5]) + "\n")
         elif acl_vars_array[i][5] == "any":
             pass
         else:
             output_file.write("\t\tdst-ip " + str(acl_vars_array[i][5]) + "\n")
 
-        is_title = service_check(str(acl_vars_array[i][6]))
+        j = [acl_vars_array[i][5]]
+        is_title = service_check(j)
         if is_title is False:
-            output_file.write("\t\tdst-port port-list " + str(acl_vars_array[i][6]) + "\n")
+            output_file.write("\t\tdst-port port-list " +
+                              str(acl_vars_array[i][6]) + "\n")
         elif acl_vars_array[i][6] == "any":
             pass
         else:
-            output_file.write("\t\tdst-port eq " + str(acl_vars_array[i][6]) + "\n")
+            output_file.write("\t\tdst-port eq " +
+                              str(acl_vars_array[i][6]) + "\n")
 
         output_file.write("\texit\n")
         output_file.write("\taction " + str(acl_vars_array[i][7]) + "\n")

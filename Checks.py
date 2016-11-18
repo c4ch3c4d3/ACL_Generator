@@ -1,5 +1,6 @@
 # pylint: disable=C0301
-# may need to implement character check for names, as they can only have a maximum character count of 32
+# may need to implement character check for names, as they can only have a
+# maximum character count of 32
 import re
 import ipaddress
 
@@ -65,27 +66,23 @@ def key_word_check(word, kind):
 
 
 def ip_check(ip_addr):
-    """Provided a string, ensure its formated as an ip address
-    Ex. 192.168.1.1/32
+    """
+    Provided an array, ensure all its elements are valid network addresses
+    Ex. 192.168.1.1/32 or 192.168.1.0/24
 
     Returns true if a correctly formatted IP is found
     """
-    ip_addr = ip_addr
-    # regex checking for an ip address in the EXACT format: ###.###.###.###/##  Anything else will be rejected
-    valid_ip = re.compile(
-        r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/(?:3[0-2]|2[0-9]|1[0-9]|[0-9]?)$")
-    try:
-        if valid_ip.search(ip_addr) is not None or ip_addr == "any":
-            return True
-        else:
-            return False
-    except:
-        for ip in ip_addr:
-            if valid_ip.search(ip) is not None or ip == "any":
-                pass
+    # regex checking for an ip address in the EXACT format: ###.###.###.###/##
+    # Anything else will be rejected
+    for i in ip_addr:
+        try:
+            if i == "any":
+                return True
             else:
-                return False
-        return True
+                ipaddress.IPv4Network(i)
+                return True
+        except ValueError:
+            return False
 
 
 def service_check(service):
@@ -93,7 +90,6 @@ def service_check(service):
     Provided a string, determine if it is a digit. If it is, ensure it is between 0 & 65535
     Returns true if an int within range is found
     """
-    service = service
     for port in service:
         if port.isdigit() is True:
             if (int(port) <= 65535) and (int(port) > 0):
@@ -107,7 +103,6 @@ def service_check(service):
 
 def space_check(name):
     """Checks for spaces."""
-    name = name
 
     # regex search for a space
     valid_name = re.compile(' ')
@@ -116,8 +111,7 @@ def space_check(name):
 
 def length_check(name):
     "Checks input ensure it is less than 30 characters"
-    name = name
-    if len(name) <= 20:
+    if len(name) <= 20 and len(name) > 0:
         return True
     else:
         return False

@@ -26,8 +26,8 @@ PROTOCOL_STRINGS = {
     'invalid': 'protocol (tcp, udp, icmp, gre, esp) or [any]: '
 }
 IP_STRINGS = [
-    " IP/CIDR or [any].  You can also provide multiple IP/CIDRs, separated by a comma: ",
-    " IP/CIDR in the form of #.#.#.#/# or [any].  Multiple IP/CIDRs must ALL be correctly formatted, or they will be rejected: "
+    " IP/CIDR network or [any].  Seperate multiples with commas: ",
+    " IP/CIDR network formatted as #.#.#.#/# or [any].  All elements must be correct to be accepted: "
 ]
 PORT_STRINGS = [
     " port or [any]: ",
@@ -83,15 +83,17 @@ def main():
         else:
             print("")
             new_term = False
-            alcatel_filter_generator(filter_number, filter_name, acl_vars, entry_number)
+            alcatel_filter_generator(
+                filter_number, filter_name, acl_vars, entry_number)
 
 
 # Functions for each type of information we need to query. There is almost certainly a way to combine all of these
 # into one function that requires more inputs, but this is easier for now. Each method follows the same general logic:
-# Ask for input, call the appropriate checking function in Checks, and ask the user again if the check returns false
+# Ask for input, call the appropriate checking function in Checks, and ask
+# the user again if the check returns false
 def q_name(kind):
     """
-    Ask for various types of names. Types accepted:
+    Ask for various kinds of names. Kinds accepted:
     'filter', 'entry', 'number'
     """
     name = input(POLITE_STRING + NAME_STRINGS[kind])
@@ -115,7 +117,7 @@ def q_name(kind):
 def q_ip(kind):
     """
     Ask for a source or destination ip.  Kinds accepted:
-    'source, 'destination'
+    'source', 'destination'
     """
     ip_addr = input(POLITE_STRING + str(kind) + IP_STRINGS[0]) or "any"
     ip_addr = ip_addr.replace(' ', '')
@@ -127,7 +129,8 @@ def q_ip(kind):
         if is_true is True:
             return ip_addr
         else:
-            ip_addr = input(str(ip_addr) + INVALID_STRING + str(kind) + IP_STRINGS[1]) or "any"
+            ip_addr = input(str(ip_addr) + INVALID_STRING +
+                            str(kind) + IP_STRINGS[1]) or "any"
             ip_addr = ip_addr.replace(' ', '')
             ip_addr = ip_addr.split(',')
             is_true = ip_check(ip_addr)
@@ -171,7 +174,8 @@ def q_protocol():
 
 def q_action(kind):
     """Ask for an action.  Kind currently doesn't matter"""
-    action = input(POLITE_STRING + str(ACTION_STRINGS['general'])) or ACTION_STRINGS[kind]
+    action = input(POLITE_STRING +
+                   str(ACTION_STRINGS['general'])) or ACTION_STRINGS[kind]
     is_true = key_word_check(action, "action")
     valid_input = False
 
@@ -180,13 +184,13 @@ def q_action(kind):
             return action
         else:
             action = input(str(action) + INVALID_STRING + str(ACTION_STRINGS['general'])) or \
-                     ACTION_STRINGS[kind]
+                ACTION_STRINGS[kind]
             is_true = key_word_check(action, "action")
 
 
 def q_new_term():
     """Ask for a new term.  Accepts no arguments"""
-    new = input(POLITE_STRING + NEW_TERM_STRINGS['general']) or "n"
+    new = input(NEW_TERM_STRINGS['general']) or "n"
     is_true = key_word_check(new, "y_or_n")
     valid_input = False
 
@@ -194,7 +198,8 @@ def q_new_term():
         if is_true is True:
             return new
         else:
-            new = input(str(new) + INVALID_STRING + str(NEW_TERM_STRINGS['invalid'])) or "n"
+            new = input(str(new) + INVALID_STRING +
+                        str(NEW_TERM_STRINGS['invalid'])) or "n"
             is_true = key_word_check(new, "y_or_n")
 
 
@@ -208,7 +213,8 @@ def q_device():
         if is_true is True:
             return device
         else:
-            device = input(str(device) + INVALID_STRING + str(DEVICE_STRINGS['invalid']))
+            device = input(str(device) + INVALID_STRING +
+                           str(DEVICE_STRINGS['invalid']))
             is_true = key_word_check(device, "device")
 
 
