@@ -41,30 +41,6 @@ def key_word_check(word, kind):
         else:
             return False
 
-
-'''def ip_check(ip_addr):
-    """Provided a string, ensure its formatted as an ip address
-    Ex. 192.168.1.1/32
-
-    Returns true if a correctly formatted IP is found
-    """
-    ip_addr = ip_addr
-    #regex checking for an ip address in the EXACT format: ###.###.###.###/##  Anything else will be rejected
-    valid_ip = re.compile(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/(?:3[0-2]|2[0-9]|1[0-9]|[0-9]?)$")
-    try:
-        if valid_ip.search(ip_addr) is not None or ip_addr == "any":
-            return True
-        else:
-            return False
-    except:
-        for ip in ip_addr:
-            if valid_ip.search(ip) is not None or ip == "any":
-                pass
-            else:
-                return False
-        return True'''
-
-
 def ip_check(ip_addr):
     """
     Provided an array, ensure all its elements are valid network addresses

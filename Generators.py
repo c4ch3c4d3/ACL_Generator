@@ -183,5 +183,7 @@ def entry_generator(acl_vars_array, entry_number, output_file):
         output_file.write("exit\n\n")
 
 
-'''def cisco_filter_generator(filter_number, name, acl_vars_array):
-    if filter_number <= 99 or filter_number <= 1300 and filter_number >= 1999:'''
+def cisco_filter_generator(filter_number, name, acl_vars_array):
+    if filter_number <= 99 or filter_number <= 1300 and filter_number >= 1999:
+        pass
+        
