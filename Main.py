@@ -1,9 +1,9 @@
 # pylint: disable=C0301, W0201
 # Generate an entry in an Alcatel ACL from command line arguments in the following form:
 # Entry, Source IP, Destination IP, Protocol, Port, Fragment Status, Action
-from Generators import alcatel_filter_generator
+from Generators import alcatel_filter_generator, cisco_filter_generator
 from Checks import key_word_check, ip_check, service_check, space_check, length_check
-
+from pdb import set_trace
 
 valid_input = False
 # Variables of strings used modularity in the below questions.
@@ -11,7 +11,7 @@ valid_input = False
 POLITE_STRING = "Please specify a "
 INVALID_STRING = " is invalid. Specify a valid "
 DEVICE_STRINGS = {
-    'general': 'platform, aclatel (a), cisco (c), or juniper (j): ',
+    'general': 'platform, alcatel (a), cisco (c), or juniper (j): ',
     'invalid': 'platform using a, c, or j: '
 }
 NAME_STRINGS = {
@@ -26,32 +26,39 @@ PROTOCOL_STRINGS = {
     'invalid': 'protocol (tcp, udp, icmp, gre, esp) or [any]: '
 }
 IP_STRINGS = [
-    " IP/CIDR network or [any].  Seperate multiples with commas: ",
-    " IP/CIDR network formatted as #.#.#.#/# or [any].  All elements must be correct to be accepted: "
+    "IP/CIDR network or [any].  Seperate multiples with commas: ",
+    "IP/CIDR network formatted as #.#.#.#/# or [any].  All elements must be correct to be accepted: "
 ]
 PORT_STRINGS = [
     " port or [any]: ",
     " port between 1-65535 or [any]: "
 ]
 ACTION_STRINGS = {
-    'general': 'action, forward/[drop]: ',
-    'alcatel': 'drop',
+    'alcatel': 'action, forward|[drop]: ',
+    'cisco': 'action, permit|[deny]: ',
     'juniper': "reject"
 }
 NEW_TERM_STRINGS = {
-    'general': 'Do you need another term? y/[n]: ',
-    'invalid': 'input, y/[n]: '
+    'general': 'Do you need another term? y|[n]: ',
+    'invalid': 'input, y|[n]: '
 }
 
 
 def main():
-    # Declaration of variables used below
-    new_term = True
-    acl_vars = []
-    entry_number = 10
-
+    #set_trace()
     # One time questions for the user to answer
-    # device_type = q_device()
+    device_type = q_device()
+    if str(device_type) == "a" or str(device_type) == "alcatel":
+        alcatel()
+    elif str(device_type) == "j" or str(device_type) == "juniper":
+        pass
+    elif str(device_type) == "c" or str(device_type) == "cisco":
+        cisco()
+
+def alcatel():
+    entry_number = 10
+    acl_vars = []
+    new_term = True
 
     filter_number = q_name("number")
     filter_name = q_name("filter") or "acl"
@@ -64,10 +71,10 @@ def main():
 
         protocol = q_protocol()
 
-        source_ip = q_ip("source")
+        source_ip = q_ip("source ")
         source_service = q_port("source")
 
-        destination_ip = q_ip("destination")
+        destination_ip = q_ip("destination ")
         destination_service = q_port("destination")
 
         action = q_action("alcatel")
@@ -85,6 +92,26 @@ def main():
             new_term = False
             alcatel_filter_generator(
                 filter_number, filter_name, acl_vars, entry_number)
+
+def cisco():
+    acl_vars = []
+    new_term = True
+ 
+    filter_number = q_name("number")
+    filter_name = q_name("filter") or "acl"
+        
+    while new_term is True:
+        source_ip = q_ip("")
+        action = q_action("cisco")
+        acl_vars.append([source_ip, action])
+        need_term = q_new_term()
+        
+        if need_term == "y":
+            print("")
+        else:
+            print("")
+            new_term = False
+            cisco_filter_generator(filter_number, filter_name, acl_vars)
 
 
 # Functions for each type of information we need to query. There is almost certainly a way to combine all of these
@@ -112,7 +139,6 @@ def q_name(kind):
             else:
                 is_true = space_check(name)
                 length = length_check(name)
-
 
 def q_ip(kind):
     """
@@ -173,9 +199,15 @@ def q_protocol():
 
 
 def q_action(kind):
-    """Ask for an action.  Kind currently doesn't matter"""
+    """
+    Ask for an action.
+    Accepts the following kinds: alcatel, cisco, juniper
+    
+    """
+    
+    DROP_KINDS = {'alcatel': 'drop', 'juniper': 'reject', 'cisco': 'deny'}
     action = input(POLITE_STRING +
-                   str(ACTION_STRINGS['general'])) or ACTION_STRINGS[kind]
+                   str(ACTION_STRINGS[kind])) or DROP_KINDS[kind]
     is_true = key_word_check(action, "action")
     valid_input = False
 
@@ -183,8 +215,7 @@ def q_action(kind):
         if is_true is True:
             return action
         else:
-            action = input(str(action) + INVALID_STRING + str(ACTION_STRINGS['general'])) or \
-                ACTION_STRINGS[kind]
+            action = input(str(action) + INVALID_STRING + str(ACTION_STRINGS[kind])) or DROP_KINDS[kind]
             is_true = key_word_check(action, "action")
 
 
@@ -213,8 +244,7 @@ def q_device():
         if is_true is True:
             return device
         else:
-            device = input(str(device) + INVALID_STRING +
-                           str(DEVICE_STRINGS['invalid']))
+            device = input(str(device) + INVALID_STRING + str(DEVICE_STRINGS['invalid']))
             is_true = key_word_check(device, "device")
 
 

@@ -2,7 +2,7 @@
 # may need to implement character check for names, as they can only have a
 # maximum character count of 32
 import re
-import ipaddress
+from ipaddress import IPv4Network
 
 
 def key_word_check(word, kind):
@@ -16,7 +16,7 @@ def key_word_check(word, kind):
     Returns true if a keyword is found
     """
     protocols = ["*", "any", "tcp", "udp", "icmp", "gre", "esp"]
-    actions = ["forward", "drop", "accept", "reject"]
+    actions = ["forward", "drop", "accept", "reject", "permit", "deny"]
     yes_or_no = ["y", "n", "Y", "N", "yes", "no"]
     device = ["a,", "c", "j", "alcatel", "juniper", "cisco"]
 
@@ -48,6 +48,7 @@ def ip_check(ip_addr):
 
     Returns true if a correctly formatted IP is found
     """
+    #import pdb; pdb.set_trace()
     # regex checking for an ip address in the EXACT format: ###.###.###.###/##
     # Anything else will be rejected
     for i in ip_addr:
@@ -55,7 +56,7 @@ def ip_check(ip_addr):
             if i == "any":
                 return True
             else:
-                ipaddress.IPv4Network(i)
+                IPv4Network(i)
                 return True
         except ValueError:
             return False

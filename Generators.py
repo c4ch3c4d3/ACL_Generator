@@ -1,5 +1,10 @@
 # pylint: disable=C0301, C0103
 from Checks import ip_check, service_check
+from ipaddress import IPv4Network
+
+#------------------------------------------------------------------------------
+#                               alcatel
+#------------------------------------------------------------------------------
 
 
 def alcatel_filter_generator(filter_number, name, acl_vars_array, entry_number):
@@ -13,7 +18,6 @@ def alcatel_filter_generator(filter_number, name, acl_vars_array, entry_number):
 
     entry_number: the amount of entries the user needs.
     """
-    # import pdb; pdb.set_trace()
     with open(name + ".txt", 'w') as output_file:
         alcatel_vars_fixer(name, acl_vars_array, output_file)
 
@@ -182,8 +186,65 @@ def entry_generator(acl_vars_array, entry_number, output_file):
         output_file.write("\taction " + str(acl_vars_array[i][7]) + "\n")
         output_file.write("exit\n\n")
 
+#------------------------------------------------------------------------------
+#                               cisco
+#------------------------------------------------------------------------------
 
 def cisco_filter_generator(filter_number, name, acl_vars_array):
-    if filter_number <= 99 or filter_number <= 1300 and filter_number >= 1999:
-        pass
+    """
+    Provided with the variables for creating an ACL, call the correct line creator
+    Note that acl_vars_array should be different depending on if it is a basic or extended ACL
+    
+    filter_number -- The number for the filter.  Must be an int
+    name -- The name of the filter, used for the remarks
+    acl_vars_array -- An array consisting the necessary variables for a Cisco ACL
+    """
+    
+    with open(name + ".txt", 'w') as output_file:
+        output_file.write("access-list %s remark %s\n" % (filter_number, name))
         
+        if int(filter_number) <= 99 or int(filter_number) <= 1300 and int(filter_number) >= 1999:
+            #import pdb; pdb.set_trace()
+            cisco_basic_line(filter_number, name, acl_vars_array, output_file)
+        elif int(filter_number) >= 100 and int(filter_number) <= 199 or int(filter_number) >= 2000 and int(filter_number) <= 2600:
+            pass
+    
+    with open(name + ".txt", 'r') as output_file:
+        print(output_file.read())
+        
+def cisco_basic_line(filter_number, name, acl_vars_array, output_file):
+    """
+    Create the lines for a cisco acl.
+    
+    filter_number -- The number for the filter.  Must be an int
+    name -- The name of the filter, used for the remarks
+    acl_vars_array -- An array consisting of IP/CIDR string, and actions
+    output_file -- the file the function should write to
+    """
+    
+    for i in range (0, len(acl_vars_array)):
+        
+        if str(acl_vars_array[i][0]) == "['any']":
+            output_file.write("access-list %s %s any \n" % (filter_number, acl_vars_array[i][1]))
+        else:
+            ip_wildcard = cisco_ip_fixer(acl_vars_array[i][0])
+            output_file.write("access-list %s %s %s %s\n" % (filter_number, acl_vars_array[i][1], ip_wildcard[0], ip_wildcard[1]))
+
+
+def cisco_ip_fixer(ip_address):
+    """
+    Provided an ip address element from a list, 
+    extracts the ip address and removes extra characters.
+    
+    Returns ip address, wildcard mask
+    """
+    
+    ip_network = ip_address
+    ip_network = str(ip_network)
+    ip_network = ip_network.replace("'", "").replace("[", "").replace("]", "")
+    ip_network = IPv4Network(ip_network)
+    ip_addr = ip_network.network_address
+    wildcard = ip_network.hostmask
+    
+    return (ip_addr, wildcard)
+    
