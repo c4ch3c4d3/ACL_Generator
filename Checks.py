@@ -18,7 +18,7 @@ def key_word_check(word, kind):
     protocols = ["*", "any", "tcp", "udp", "icmp", "gre", "esp"]
     actions = ["forward", "drop", "accept", "reject", "permit", "deny"]
     yes_or_no = ["y", "n", "Y", "N", "yes", "no"]
-    device = ["a,", "c", "j", "alcatel", "juniper", "cisco"]
+    device = ["a", "c", "j", "alcatel", "juniper", "cisco"]
 
     if kind == "protocol":
         if word in protocols:

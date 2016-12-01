@@ -3,6 +3,7 @@
 # Entry, Source IP, Destination IP, Protocol, Port, Fragment Status, Action
 from Generators import alcatel_filter_generator, cisco_filter_generator
 from Checks import key_word_check, ip_check, service_check, space_check, length_check
+from pdb import set_trace
 
 valid_input = False
 # Variables of strings used modularity in the below questions.
@@ -24,34 +25,28 @@ PROTOCOL_STRINGS = {
     'general': 'protocol or [any]: ',
     'invalid': 'protocol (tcp, udp, icmp, gre, esp) or [any]: '
 }
-
-IP_STRINGS = {
-    'single' : ' IP/CIDR network or [any]: ',
-    'single error' : 'single IP/CIDR network formatted as #.#.#.#/# or [any]: ',
-    'multiple' : ' IP/CIDR network or [any].  Seperate multiples with commas: ',
-    'multiple error' : 'IP/CIDR network formatted as #.#.#.#/# or [any].  All elements must be correct to be accepted: '
-}
-
-
+IP_STRINGS = [
+    "IP/CIDR network or [any].  Seperate multiples with commas: ",
+    "IP/CIDR network formatted as #.#.#.#/# or [any].  All elements must be correct to be accepted: "
+]
 PORT_STRINGS = [
     " port or [any]: ",
     " port between 1-65535 or [any]: "
 ]
 ACTION_STRINGS = {
-    'alcatel': 'action, forward | [drop]: ',
-    'cisco': 'action, permit | [deny]: ',
+    'alcatel': 'action, forward|[drop]: ',
+    'cisco': 'action, permit|[deny]: ',
     'juniper': "reject"
 }
 NEW_TERM_STRINGS = {
-    'general': 'Do you need another term? y | [n]: ',
-    'invalid': 'input, y | [n]: '
+    'general': 'Do you need another term? y|[n]: ',
+    'invalid': 'input, y|[n]: '
 }
 
 
 def main():
-    """
-    Initiates the program. Asks for device kind, and calls the appropriate device method
-    """
+    #set_trace()
+    # One time questions for the user to answer
     device_type = q_device()
     if str(device_type) == "a" or str(device_type) == "alcatel":
         alcatel()
@@ -61,74 +56,47 @@ def main():
         cisco()
 
 def alcatel():
-    """
-    Alcatel ACL generation.  
-    """
-    
     entry_number = 10
     acl_vars = []
+    new_term = True
+
     filter_number = q_name("number")
     filter_name = q_name("filter") or "acl"
     print("")
-    need_term = "y"
-    
-    while need_term == "y":
-        acl_vars.append(all_device_questions("alcatel", entry_number))
+
+    # user interaction, obtain the necessary components for an ACL
+    while new_term is True:
+
+
         need_term = q_new_term()
-        print("")
         if need_term == "y":
             entry_number += 10
-
-    alcatel_filter_generator(filter_number, filter_name, acl_vars, entry_number)
+            print("")
+        else:
+            print("")
+            new_term = False
+            alcatel_filter_generator(
+                filter_number, filter_name, acl_vars, entry_number)
 
 def cisco():
-    """
-    Cisco ACL generation.  Distinguishes between basic and extended using the user provided filter number.
-    """
-    
     acl_vars = []
-    need_term = "y"
+    new_term = True
  
     filter_number = q_name("number")
     filter_name = q_name("filter") or "acl"
-    
-    if int(filter_number) <= 99 or int(filter_number) <= 1300 and int(filter_number) >= 1999:
-        while need_term == "y":
-            source_ip = q_ip("", "single")
-            action = q_action("cisco")
-            acl_vars.append([source_ip, action])
-            need_term = q_new_term()
-            
-            if need_term == "y":
-                print("")
-            else:
-                print("")
-                need_term = "n"
-                cisco_filter_generator(filter_number, filter_name, acl_vars)
-
-            
-    elif int(filter_number) >= 100 and int(filter_number) <= 199 or int(filter_number) >= 2000 and int(filter_number) <= 2699:
-        while need_term == "y":
-            acl_vars.append(all_device_questions("cisco"))
-            need_term = q_new_term()
-        cisco_filter_generator(filter_number, filter_name, acl_vars)
-
-
-def all_device_questions(kind, *entry_number):
-    acl_vars = []
-
-    if kind == "alcatel":
-        entry_number = entry_number[0]
-        acl_vars.append(entry_number)
-        acl_vars.append(q_name("entry"))
-
-    acl_vars.append(q_protocol())
-    acl_vars.append(q_ip("source"))
-    acl_vars.append(q_port("source"))
-    acl_vars.append(q_ip("destination"))
-    acl_vars.append(q_port("destination"))
-    acl_vars.append(q_action(kind))
-    return acl_vars
+        
+    while new_term is True:
+        source_ip = q_ip("")
+        action = q_action("cisco")
+        acl_vars.append([source_ip, action])
+        need_term = q_new_term()
+        
+        if need_term == "y":
+            print("")
+        else:
+            print("")
+            new_term = False
+            cisco_filter_generator(filter_number, filter_name, acl_vars)
 
 
 # Functions for each type of information we need to query. There is almost certainly a way to combine all of these
@@ -157,50 +125,27 @@ def q_name(kind):
                 is_true = space_check(name)
                 length = length_check(name)
 
-def q_ip(kind, basic = None):
+def q_ip(kind):
     """
-    Ask for a source or destination ip.  
-    Kinds -- 'source', 'destination'
-    device -- 'alcatel', 'cisco', 'juniper'
+    Ask for a source or destination ip.  Kinds accepted:
+    'source', 'destination'
     """
-    if basic is not None:
-        m_or_s = "single"
-    else:
-        m_or_s = "multiple"
-    
-    if m_or_s == "multiple":
-        ip_addr = input(POLITE_STRING + str(kind) + IP_STRINGS['multiple']) or "any"
-        ip_addr = ip_addr.replace(' ', '')
-        ip_addr = ip_addr.split(',')
-        is_true = ip_check(ip_addr)
-    elif m_or_s == "single":
-        ip_addr = input(POLITE_STRING + str(kind) + IP_STRINGS['single']) or "any"
-        ip_addr = ip_addr.replace(' ', '')
-        ip_addr = ip_addr.split(',')
-        if len(ip_addr) == 1:
-            is_true = ip_check(ip_addr)
-        else:
-            is_true = False
-        
+    ip_addr = input(POLITE_STRING + str(kind) + IP_STRINGS[0]) or "any"
+    ip_addr = ip_addr.replace(' ', '')
+    ip_addr = ip_addr.split(',')
+    is_true = ip_check(ip_addr)
     valid_input = False
 
     while valid_input is False:
         if is_true is True:
             return ip_addr
         else:
-            if m_or_s == "multiple":
-                ip_addr = input(str(ip_addr) + INVALID_STRING + str(kind) + IP_STRINGS['multiple error']) or "any"
-                ip_addr = ip_addr.replace(' ', '')
-                ip_addr = ip_addr.split(',')
-                is_true = ip_check(ip_addr)
-            elif m_or_s == "single":
-                ip_addr = input(POLITE_STRING + str(kind) + IP_STRINGS['single error']) or "any"
-                ip_addr = ip_addr.replace(' ', '')
-                ip_addr = ip_addr.split(',')
-                if len(ip_addr) == 1:
-                    is_true = ip_check(ip_addr)
-                else:
-                    is_true = False
+            ip_addr = input(str(ip_addr) + INVALID_STRING +
+                            str(kind) + IP_STRINGS[1]) or "any"
+            ip_addr = ip_addr.replace(' ', '')
+            ip_addr = ip_addr.split(',')
+            is_true = ip_check(ip_addr)
+
 
 def q_port(kind):
     """

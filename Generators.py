@@ -127,10 +127,10 @@ def entry_generator(acl_vars_array, entry_number, output_file):
     entry_number: the amount of entries the user needs.
 
     """
-
+    import pdb; pdb.set_trace()
     i = entry_number
 
-    for i in range(0, int(i / 10), 1):
+    for i in range(0, int(i / 10)):
         output_file.write("entry " + str(acl_vars_array[i][0]) + " create\n")
         output_file.write("\tdescription " + str(acl_vars_array[i][1]) + "\n")
 
@@ -204,10 +204,9 @@ def cisco_filter_generator(filter_number, name, acl_vars_array):
         output_file.write("access-list %s remark %s\n" % (filter_number, name))
         
         if int(filter_number) <= 99 or int(filter_number) <= 1300 and int(filter_number) >= 1999:
-            #import pdb; pdb.set_trace()
             cisco_basic_line(filter_number, name, acl_vars_array, output_file)
-        elif int(filter_number) >= 100 and int(filter_number) <= 199 or int(filter_number) >= 2000 and int(filter_number) <= 2600:
-            pass
+        elif int(filter_number) >= 100 and int(filter_number) <= 199 or int(filter_number) >= 2000 and int(filter_number) <= 2699:
+            cisco_extended_line()
     
     with open(name + ".txt", 'r') as output_file:
         print(output_file.read())
@@ -230,6 +229,8 @@ def cisco_basic_line(filter_number, name, acl_vars_array, output_file):
             ip_wildcard = cisco_ip_fixer(acl_vars_array[i][0])
             output_file.write("access-list %s %s %s %s\n" % (filter_number, acl_vars_array[i][1], ip_wildcard[0], ip_wildcard[1]))
 
+def cisco_extended_line(filter_number, name, acl_vars_array, output_file):
+    
 
 def cisco_ip_fixer(ip_address):
     """
@@ -247,4 +248,17 @@ def cisco_ip_fixer(ip_address):
     wildcard = ip_network.hostmask
     
     return (ip_addr, wildcard)
+
+
     
+def main():
+    filter_number = 123
+    name = test
+    acl_vars = [[10, 'entry', 'tcp', ['192.168.1.1/32', '192.168.1.2/32'], ['80', '443'], ['10.0.0.1/32', '10.0.0.0/8'], ['any'], 'forward'], [20, 'entry_2', '*', ['192.18.1.1/32'], ['any'], ['any'], ['any'], 'drop']]
+    
+     with open(name + ".txt", 'w') as output_file:
+        output_file.write("access-list %s remark %s\n" % (filter_number, name))
+        cisco_extended_line(filter_number, name, acl_vars_array, output_file)
+
+if __name__ == '__main__':
+    main()
