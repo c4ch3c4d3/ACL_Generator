@@ -15,7 +15,7 @@ def key_word_check(word, kind):
 
     Returns true if a keyword is found
     """
-    protocols = ["*", "any", "tcp", "udp", "icmp", "gre", "esp"]
+    protocols = ["*", "any", "ip", "tcp", "udp", "icmp", "gre", "esp"]
     actions = ["forward", "drop", "accept", "reject", "permit", "deny"]
     yes_or_no = ["y", "n", "Y", "N", "yes", "no"]
     device = ["a", "c", "j", "alcatel", "juniper", "cisco"]
@@ -48,18 +48,28 @@ def ip_check(ip_addr):
 
     Returns true if a correctly formatted IP is found
     """
-    #import pdb; pdb.set_trace()
-    # regex checking for an ip address in the EXACT format: ###.###.###.###/##
-    # Anything else will be rejected
-    for i in ip_addr:
+    if type(ip_addr) is str:
         try:
-            if i == "any":
+            if ip_addr == "any":
                 return True
             else:
-                IPv4Network(i)
+                #IPv4Network, provided a string in the format "###.###.###.###/##" will return a network object.
+                #We only use it to ensure that a string is a valid network object, otherwise an error will occur and be excepted
+                IPv4Network(ip_addr)
                 return True
         except ValueError:
             return False
+                
+    elif type(ip_addr) is list:
+        for i in ip_addr:
+            try:
+                if i == "any":
+                    return True
+                else:
+                    IPv4Network(i)
+                    return True
+            except ValueError:
+                return False
 
 
 def service_check(service):
@@ -67,15 +77,27 @@ def service_check(service):
     Provided a string, determine if it is a digit. If it is, ensure it is between 0 & 65535
     Returns true if an int within range is found
     """
-    for port in service:
-        if port.isdigit() is True:
-            if (int(port) <= 65535) and (int(port) > 0):
+    #Used when passed a string
+    if type(service) is str:
+        if service.isdigit() is True:
+            if (int(service) <= 65535) and (int(service) > 0):
                 pass
-        elif service[0] == "any" or service == "any":
+        elif service == "any":
             return True
         else:
             return False
-    return True
+
+    #Used when passed a list
+    elif type(service) is list:
+        for port in service:
+            if port.isdigit() is True:
+                if (int(port) <= 65535) and (int(port) > 0):
+                    pass
+            elif service[0] == "any" or service == "any":
+                return True
+            else:
+                return False
+        return True
 
 
 def space_check(name):

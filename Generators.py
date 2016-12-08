@@ -127,7 +127,6 @@ def entry_generator(acl_vars_array, entry_number, output_file):
     entry_number: the amount of entries the user needs.
 
     """
-    import pdb; pdb.set_trace()
     i = entry_number
 
     for i in range(0, int(i / 10)):
@@ -191,6 +190,7 @@ def entry_generator(acl_vars_array, entry_number, output_file):
 #------------------------------------------------------------------------------
 
 def cisco_filter_generator(filter_number, name, acl_vars_array):
+    #[['permit', 'tcp', '192.168.1.2/32', '909', '10.0.0.2/32', 'any'], ['deny', 'ip', 'any', 'None', 'any', 'None']]
     """
     Provided with the variables for creating an ACL, call the correct line creator
     Note that acl_vars_array should be different depending on if it is a basic or extended ACL
@@ -201,19 +201,19 @@ def cisco_filter_generator(filter_number, name, acl_vars_array):
     """
     
     with open(name + ".txt", 'w') as output_file:
-        output_file.write("access-list %s remark %s\n" % (filter_number, name))
-        
+
         if int(filter_number) <= 99 or int(filter_number) <= 1300 and int(filter_number) >= 1999:
+            output_file.write("access-list %s remark %s\n" % (filter_number, name))
             cisco_basic_line(filter_number, name, acl_vars_array, output_file)
         elif int(filter_number) >= 100 and int(filter_number) <= 199 or int(filter_number) >= 2000 and int(filter_number) <= 2699:
-            cisco_extended_line()
+            cisco_extended_line(filter_number, name, acl_vars_array, output_file)
     
     with open(name + ".txt", 'r') as output_file:
         print(output_file.read())
         
 def cisco_basic_line(filter_number, name, acl_vars_array, output_file):
     """
-    Create the lines for a cisco acl.
+    Create the lines for a basic cisco acl.
     
     filter_number -- The number for the filter.  Must be an int
     name -- The name of the filter, used for the remarks
@@ -230,6 +230,32 @@ def cisco_basic_line(filter_number, name, acl_vars_array, output_file):
             output_file.write("access-list %s %s %s %s\n" % (filter_number, acl_vars_array[i][1], ip_wildcard[0], ip_wildcard[1]))
 
 def cisco_extended_line(filter_number, name, acl_vars_array, output_file):
+    """
+    Create the lines for an extended cisco acl. 
+    
+    filter_number -- The number for the filter.  Must be an int
+    name -- The name of the filter, used for the remarks
+    acl_vars_array -- An array consisting of IP/CIDR string, and actions
+    output_file -- the file the function should write to
+
+    """
+    output_file.write("ip access-list extended %s \n" % (name))
+    for i in range(0, len(acl_vars_array)):
+        #ensure IPs are not any, and obtain a wildcard
+        if acl_vars_array[i][2] != "any":
+            src_ip = cisco_ip_fixer(acl_vars_array[i][2])
+        else:
+            src_ip = ("any", "\b")
+        if acl_vars_array[i][4] != "any":
+            dst_ip = cisco_ip_fixer(acl_vars_array[i][4])
+        else:
+            dst_ip = ("any", "\b")
+        
+        if acl_vars_array[i][1] == "ip":
+            output_file.write(acl_vars_array[i][0]+ " " + acl_vars_array[i][1]+ " " + src_ip[0]+ " " + src_ip[1]+ " " + dst_ip[0]+ " " + dst_ip[1]+ "\n")
+        else:
+            output_file.write(acl_vars_array[i][0] + " "+ acl_vars_array[i][1]+ " " + str(src_ip[0])+ " " + str(src_ip[1]) + " eq " + acl_vars_array[i][3]+ " " + str(dst_ip[0])+ " " + str(dst_ip[1])+ " eq " + acl_vars_array[i][5] +"\n")
+    
     
 
 def cisco_ip_fixer(ip_address):
@@ -253,12 +279,15 @@ def cisco_ip_fixer(ip_address):
     
 def main():
     filter_number = 123
-    name = test
-    acl_vars = [[10, 'entry', 'tcp', ['192.168.1.1/32', '192.168.1.2/32'], ['80', '443'], ['10.0.0.1/32', '10.0.0.0/8'], ['any'], 'forward'], [20, 'entry_2', '*', ['192.18.1.1/32'], ['any'], ['any'], ['any'], 'drop']]
-    
-     with open(name + ".txt", 'w') as output_file:
-        output_file.write("access-list %s remark %s\n" % (filter_number, name))
+    name = "test"
+    acl_vars_array = [['permit', 'tcp', '192.168.1.2/32', '909', '10.0.0.0/8', 'any'], ['deny', 'ip', 'any', 'None', 'any', 'None']]
+
+    with open(name + ".txt", 'w') as output_file:
+        
         cisco_extended_line(filter_number, name, acl_vars_array, output_file)
+
+    with open(name + ".txt", 'r') as output_file:
+        print(output_file.read())
 
 if __name__ == '__main__':
     main()
