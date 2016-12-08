@@ -94,3 +94,5 @@ ENV/
 
 #ignore itself
 .gitignore
+
+.vscode

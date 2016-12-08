@@ -1,5 +1,10 @@
 # pylint: disable=C0301, C0103
 from Checks import ip_check, service_check
+from ipaddress import IPv4Network
+
+#------------------------------------------------------------------------------
+#                               alcatel
+#------------------------------------------------------------------------------
 
 
 def alcatel_filter_generator(filter_number, name, acl_vars_array, entry_number):
@@ -13,11 +18,11 @@ def alcatel_filter_generator(filter_number, name, acl_vars_array, entry_number):
 
     entry_number: the amount of entries the user needs.
     """
-    # import pdb; pdb.set_trace()
     with open(name + ".txt", 'w') as output_file:
         alcatel_vars_fixer(name, acl_vars_array, output_file)
 
-        output_file.write("configure filter ip-filter " + str(filter_number) + " create\n")
+        output_file.write("configure filter ip-filter " +
+                          str(filter_number) + " create\n")
         output_file.write("description " + str(name) + "\n")
 
         entry_generator(acl_vars_array, entry_number, output_file)
@@ -66,14 +71,16 @@ def alcatel_vars_fixer(name, acl_vars_array, output_file):
                 existing_list_numbers.append(acl_vars_array[x][y])
                 acl_vars_array[x][y] = list_generator(str(name) + "_ip_list_" + str(ip_list_number), "ip_list",
                                                       acl_vars_array[x][y], output_file)
-                existing_list_names.append(str(name) + "_ip_list_" + str(ip_list_number))
+                existing_list_names.append(
+                    str(name) + "_ip_list_" + str(ip_list_number))
                 ip_list_number += 1
             elif len(acl_vars_array[x][y]) > 1 and y == 4 and service_check(acl_vars_array[x][y]) is True or len(
                     acl_vars_array[x][y]) > 1 and y == 6 and service_check(acl_vars_array[x][y]) is True:
                 existing_list_numbers.append(acl_vars_array[x][y])
                 acl_vars_array[x][y] = list_generator(str(name) + "_port_list_" + str(port_list_number), "port_list",
                                                       acl_vars_array[x][y], output_file)
-                existing_list_names.append(str(name) + "_port_list_" + str(port_list_number))
+                existing_list_names.append(
+                    str(name) + "_port_list_" + str(port_list_number))
                 port_list_number += 1
             elif duplicate is True:
                 acl_vars_array[x][y] = existing_list_names[z]
@@ -96,7 +103,8 @@ def list_generator(name, kind, numbers, output_file):
         'port_list': "port-list "
     }
 
-    output_file.write("configure filter match-list " + LIST_STRING[kind] + str(name) + " create\n")
+    output_file.write("configure filter match-list " +
+                      LIST_STRING[kind] + str(name) + " create\n")
     if kind == "ip_list":
         for ip_addr in numbers:
             output_file.write("\tprefix " + str(ip_addr) + "\n")
@@ -119,54 +127,167 @@ def entry_generator(acl_vars_array, entry_number, output_file):
     entry_number: the amount of entries the user needs.
 
     """
-
     i = entry_number
 
-    for i in range(0, int(i / 10), 1):
+    for i in range(0, int(i / 10)):
         output_file.write("entry " + str(acl_vars_array[i][0]) + " create\n")
         output_file.write("\tdescription " + str(acl_vars_array[i][1]) + "\n")
 
         if acl_vars_array[i][2] == "any":
             output_file.write("\tmatch protocol *\n")
         else:
-            output_file.write("\tmatch protocol " + str(acl_vars_array[i][2]) + "\n")
+            output_file.write("\tmatch protocol " +
+                              str(acl_vars_array[i][2]) + "\n")
 
-        is_title = ip_check(str(acl_vars_array[i][3]))
+        j = [acl_vars_array[i][3]]
+        is_title = ip_check(j)
         if is_title is False:
-            output_file.write("\t\tsrc-ip ip-prefix-list " + str(acl_vars_array[i][3]) + "\n")
+            output_file.write("\t\tsrc-ip ip-prefix-list " +
+                              str(acl_vars_array[i][3]) + "\n")
         elif acl_vars_array[i][3] == "any":
             pass
         else:
             output_file.write("\t\tsrc-ip " + str(acl_vars_array[i][3]) + "\n")
 
-        is_title = service_check(str(acl_vars_array[i][4]))
+        j = [acl_vars_array[i][4]]
+        is_title = service_check(j)
         if is_title is False:
-            output_file.write("\t\tsrc-port port-list " + str(acl_vars_array[i][4]) + "\n")
+            output_file.write("\t\tsrc-port port-list " +
+                              str(acl_vars_array[i][4]) + "\n")
         elif acl_vars_array[i][4] == "any":
             pass
         else:
-            output_file.write("\t\tsrc-port eq " + str(acl_vars_array[i][4]) + "\n")
+            output_file.write("\t\tsrc-port eq " +
+                              str(acl_vars_array[i][4]) + "\n")
 
-        is_title = ip_check(str(acl_vars_array[i][5]))
+        j = [acl_vars_array[i][5]]
+        is_title = ip_check(j)
         if is_title is False:
-            output_file.write("\t\tdst-ip ip-prefix-list " + str(acl_vars_array[i][5]) + "\n")
+            output_file.write("\t\tdst-ip ip-prefix-list " +
+                              str(acl_vars_array[i][5]) + "\n")
         elif acl_vars_array[i][5] == "any":
             pass
         else:
             output_file.write("\t\tdst-ip " + str(acl_vars_array[i][5]) + "\n")
 
-        is_title = service_check(str(acl_vars_array[i][6]))
+        j = [acl_vars_array[i][5]]
+        is_title = service_check(j)
         if is_title is False:
-            output_file.write("\t\tdst-port port-list " + str(acl_vars_array[i][6]) + "\n")
+            output_file.write("\t\tdst-port port-list " +
+                              str(acl_vars_array[i][6]) + "\n")
         elif acl_vars_array[i][6] == "any":
             pass
         else:
-            output_file.write("\t\tdst-port eq " + str(acl_vars_array[i][6]) + "\n")
+            output_file.write("\t\tdst-port eq " +
+                              str(acl_vars_array[i][6]) + "\n")
 
         output_file.write("\texit\n")
         output_file.write("\taction " + str(acl_vars_array[i][7]) + "\n")
         output_file.write("exit\n\n")
 
+#------------------------------------------------------------------------------
+#                               cisco
+#------------------------------------------------------------------------------
 
-'''def cisco_filter_generator(filter_number, name, acl_vars_array):
-    if filter_number <= 99 or filter_number <= 1300 and filter_number >= 1999:'''
+def cisco_filter_generator(filter_number, name, acl_vars_array):
+    #[['permit', 'tcp', '192.168.1.2/32', '909', '10.0.0.2/32', 'any'], ['deny', 'ip', 'any', 'None', 'any', 'None']]
+    """
+    Provided with the variables for creating an ACL, call the correct line creator
+    Note that acl_vars_array should be different depending on if it is a basic or extended ACL
+    
+    filter_number -- The number for the filter.  Must be an int
+    name -- The name of the filter, used for the remarks
+    acl_vars_array -- An array consisting the necessary variables for a Cisco ACL
+    """
+    
+    with open(name + ".txt", 'w') as output_file:
+
+        if int(filter_number) <= 99 or int(filter_number) <= 1300 and int(filter_number) >= 1999:
+            output_file.write("access-list %s remark %s\n" % (filter_number, name))
+            cisco_basic_line(filter_number, name, acl_vars_array, output_file)
+        elif int(filter_number) >= 100 and int(filter_number) <= 199 or int(filter_number) >= 2000 and int(filter_number) <= 2699:
+            cisco_extended_line(filter_number, name, acl_vars_array, output_file)
+    
+    with open(name + ".txt", 'r') as output_file:
+        print(output_file.read())
+        
+def cisco_basic_line(filter_number, name, acl_vars_array, output_file):
+    """
+    Create the lines for a basic cisco acl.
+    
+    filter_number -- The number for the filter.  Must be an int
+    name -- The name of the filter, used for the remarks
+    acl_vars_array -- An array consisting of IP/CIDR string, and actions
+    output_file -- the file the function should write to
+    """
+    
+    for i in range (0, len(acl_vars_array)):
+        
+        if str(acl_vars_array[i][0]) == "['any']":
+            output_file.write("access-list %s %s any \n" % (filter_number, acl_vars_array[i][1]))
+        else:
+            ip_wildcard = cisco_ip_fixer(acl_vars_array[i][0])
+            output_file.write("access-list %s %s %s %s\n" % (filter_number, acl_vars_array[i][1], ip_wildcard[0], ip_wildcard[1]))
+
+def cisco_extended_line(filter_number, name, acl_vars_array, output_file):
+    """
+    Create the lines for an extended cisco acl. 
+    
+    filter_number -- The number for the filter.  Must be an int
+    name -- The name of the filter, used for the remarks
+    acl_vars_array -- An array consisting of IP/CIDR string, and actions
+    output_file -- the file the function should write to
+
+    """
+    output_file.write("ip access-list extended %s \n" % (name))
+    for i in range(0, len(acl_vars_array)):
+        #ensure IPs are not any, and obtain a wildcard
+        if acl_vars_array[i][2] != "any":
+            src_ip = cisco_ip_fixer(acl_vars_array[i][2])
+        else:
+            src_ip = ("any", "\b")
+        if acl_vars_array[i][4] != "any":
+            dst_ip = cisco_ip_fixer(acl_vars_array[i][4])
+        else:
+            dst_ip = ("any", "\b")
+        
+        if acl_vars_array[i][1] == "ip":
+            output_file.write(acl_vars_array[i][0]+ " " + acl_vars_array[i][1]+ " " + src_ip[0]+ " " + src_ip[1]+ " " + dst_ip[0]+ " " + dst_ip[1]+ "\n")
+        else:
+            output_file.write(acl_vars_array[i][0] + " "+ acl_vars_array[i][1]+ " " + str(src_ip[0])+ " " + str(src_ip[1]) + " eq " + acl_vars_array[i][3]+ " " + str(dst_ip[0])+ " " + str(dst_ip[1])+ " eq " + acl_vars_array[i][5] +"\n")
+    
+    
+
+def cisco_ip_fixer(ip_address):
+    """
+    Provided an ip address element from a list, 
+    extracts the ip address and removes extra characters.
+    
+    Returns ip address, wildcard mask
+    """
+    
+    ip_network = ip_address
+    ip_network = str(ip_network)
+    ip_network = ip_network.replace("'", "").replace("[", "").replace("]", "")
+    ip_network = IPv4Network(ip_network)
+    ip_addr = ip_network.network_address
+    wildcard = ip_network.hostmask
+    
+    return (ip_addr, wildcard)
+
+
+    
+def main():
+    filter_number = 123
+    name = "test"
+    acl_vars_array = [['permit', 'tcp', '192.168.1.2/32', '909', '10.0.0.0/8', 'any'], ['deny', 'ip', 'any', 'None', 'any', 'None']]
+
+    with open(name + ".txt", 'w') as output_file:
+        
+        cisco_extended_line(filter_number, name, acl_vars_array, output_file)
+
+    with open(name + ".txt", 'r') as output_file:
+        print(output_file.read())
+
+if __name__ == '__main__':
+    main()
